@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Файна СЕС будинок 19 (v3)</title>
+    <title>Форма оплати ОСББ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,14 +61,12 @@
             color: #495057;
         }
 
-        /* Стилі для поля URL, що копіюється */
         #urlInput {
             cursor: pointer;
             word-break: break-all;
             font-size: 12px;
         }
 
-        /* Підсвічування червоним при некоректному значенні */
         input.invalid {
             border-color: #dc3545;
             background-color: #f8d7da;
@@ -107,7 +105,6 @@
             background-color: #0056b3;
         }
 
-        /* Стан деактивованої кнопки */
         button:disabled {
             background-color: #6c757d;
             opacity: 0.65;
@@ -118,7 +115,7 @@
 <body>
 
 <div class="form-container">
-    <h2>Форма оплати</h2>
+    <h2>Форма оплати v4</h2>
     <form id="paymentForm">
         <div class="form-group">
             <label for="aptNumber">Номер квартири</label>
@@ -162,14 +159,52 @@
     const copyTooltip = document.getElementById('copyTooltip');
     const form = document.getElementById('paymentForm');
 
-    // UTF-8 Base64 кодування
-    function utf8ToBase64(str) {
-        const bytes = new TextEncoder().encode(str);
-        const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
-        return btoa(binString);
+    // Карта відповідності Unicode-символів до байтів Windows-1251
+    const win1251Mapping = {
+        'Ђ': 0x80, 'Ѓ': 0x81, '‚': 0x82, 'ѓ': 0x83, '„': 0x84, '…': 0x85, '†': 0x86, '‡': 0x87,
+        '€': 0x88, '‰': 0x89, 'Љ': 0x8A, '‹': 0x8B, 'Њ': 0x8C, 'Ќ': 0x8D, 'Ћ': 0x8E, 'Џ': 0x8F,
+        'ђ': 0x90, '‘': 0x91, '’': 0x92, '“': 0x93, '”': 0x94, '•': 0x95, '–': 0x96, '—': 0x97,
+        '™': 0x99, 'љ': 0x9A, '›': 0x9B, 'њ': 0x9C, 'ќ': 0x9D, 'ћ': 0x9E, 'џ': 0x9F, ' ': 0xA0,
+        'Ў': 0xA1, 'ў': 0xA2, 'Ј': 0xA3, '¤': 0xA4, 'Ґ': 0xA5, '¦': 0xA6, '§': 0xA7, 'Ё': 0xA8,
+        '©': 0xA9, 'Є': 0xAA, '«': 0xAB, '¬': 0xAC, '­': 0xAD, '®': 0xAE, 'Ї': 0xAF, '°': 0xB0,
+        '±': 0xB1, 'І': 0xB2, 'і': 0xB3, 'ґ': 0xB4, 'µ': 0xB5, '¶': 0xB6, '·': 0xB7, 'ё': 0xB8,
+        '№': 0xB9, 'є': 0xBA, '»': 0xBB, 'ј': 0xBC, 'Ѕ': 0xBD, 'ѕ': 0xBE, 'ї': 0xBF, 'А': 0xC0,
+        'Б': 0xC1, 'В': 0xC2, 'Г': 0xC3, 'Д': 0xC4, 'Е': 0xC5, 'Ж': 0xC6, 'З': 0xC7, 'И': 0xC8,
+        'Й': 0xC9, 'К': 0xCA, 'Л': 0xCB, 'М': 0xCC, 'Н': 0xCD, 'О': 0xCE, 'П': 0xCF, 'Р': 0xD0,
+        'С': 0xD1, 'Т': 0xD2, 'У': 0xD3, 'Ф': 0xD4, 'Х': 0xD5, 'Ц': 0xD6, 'Ч': 0xD7, 'Ш': 0xD8,
+        'Щ': 0xD9, 'Ъ': 0xDA, 'Ы': 0xDB, 'Ь': 0xDC, 'Э': 0xDD, 'Ю': 0xDE, 'Я': 0xDF, 'а': 0xE0,
+        'б': 0xE1, 'в': 0xE2, 'г': 0xE3, 'д': 0xE4, 'е': 0xE5, 'ж': 0xE6, 'з': 0xE7, 'и': 0xE8,
+        'й': 0xE9, 'к': 0xEA, 'л': 0xEB, 'м': 0xEC, 'н': 0xED, 'о': 0xEE, 'п': 0xEF, 'р': 0xF0,
+        'с': 0xF1, 'т': 0xF2, 'у': 0xF3, 'ф': 0xF4, 'х': 0xF5, 'ц': 0xF6, 'ч': 0xF7, 'ш': 0xF8,
+        'щ': 0xF9, 'ъ': 0xFA, 'ы': 0xFB, 'ь': 0xFC, 'э': 0xFD, 'ю': 0xFE, 'я': 0xFF
+    };
+
+    // Функція кодування рядка у Base64 з використанням таблиці Windows-1251
+    function win1251ToBase64(str) {
+        let binaryStr = "";
+        for (let i = 0; i < str.length; i++) {
+            const ch = str[i];
+            const code = ch.charCodeAt(0);
+
+            if (code < 128) {
+                // Стандартні ASCII символи (0-127)
+                binaryStr += String.fromCharCode(code);
+            } else if (win1251Mapping[ch] !== undefined) {
+                // Символи, що є в таблиці Windows-1251
+                binaryStr += String.fromCharCode(win1251Mapping[ch]);
+            } else {
+                // Запасний варіант для апострофів та невідомих символів
+                if (ch === '’' || ch === '`' || ch === '‘') {
+                    binaryStr += String.fromCharCode(0x27); // Звичайний ASCII апостроф '
+                } else {
+                    binaryStr += '?';
+                }
+            }
+        }
+        return btoa(binaryStr);
     }
 
-    // Розрахунок під'їзду за номером квартири
+    // Розрахунок під'їзду
     function calculateEntrance(val) {
         if (val >= 1 && val <= 30) return 1;
         if (val >= 31 && val <= 54) return 2;
@@ -187,7 +222,7 @@
         const rawData = [
             "BCD",
             "002",
-            "1",
+            "2",
             "UCT",
             "",
             'АСОЦІАЦІЯ ОСББ "ЖК ФАЙНА ТАУН"',
@@ -199,10 +234,11 @@
             ""
         ].join("\n");
 
-        return "https://bank.gov.ua/qr/" + utf8ToBase64(rawData);
+        // Використовуємо кодування Windows-1251 для Base64
+        return "https://bank.gov.ua/qr/" + win1251ToBase64(rawData);
     }
 
-    // Перевірка стану всієї форми
+    // Валідація всієї форми
     function validateForm() {
         const aptVal = parseInt(aptInput.value, 10);
         const isAptValid = !isNaN(aptVal) && aptVal >= 1 && aptVal <= 162;
@@ -210,7 +246,6 @@
         const isAmountValid = !isNaN(amountVal) && amountVal > 0;
         const isFullNameValid = fullNameInput.value.trim().length > 0;
 
-        // Перевірка номера квартири та вивід помилки
         if (aptInput.value !== '' && !isAptValid) {
             aptInput.classList.add('invalid');
             aptError.style.display = 'block';
@@ -225,7 +260,6 @@
             }
         }
 
-        // Якщо всі поля правильно заповнені
         if (isAptValid && isAmountValid && isFullNameValid) {
             submitBtn.disabled = false;
             const link = generateDeeplink(aptVal, entranceInput.value, amountInput.value, fullNameInput.value);
@@ -236,12 +270,12 @@
         }
     }
 
-    // Слухачі подій для валідації в реальному часі
+    // Події зміни полів
     aptInput.addEventListener('input', validateForm);
     amountInput.addEventListener('input', validateForm);
     fullNameInput.addEventListener('input', validateForm);
 
-    // Копіювання URL у буфер обміну при кліку
+    // Копіювання по кліку
     urlInput.addEventListener('click', function() {
         if (!this.value) return;
 
@@ -250,8 +284,7 @@
             setTimeout(() => {
                 copyTooltip.style.display = 'none';
             }, 2500);
-        }).catch(err => {
-            // Резервний варіант копіювання, якщо Clipboard API заблоковано
+        }).catch(() => {
             this.select();
             document.execCommand('copy');
             copyTooltip.style.display = 'block';
@@ -269,7 +302,6 @@
         }
     });
 
-    // Первинна перевірка при завантаженні
     validateForm();
 </script>
 
