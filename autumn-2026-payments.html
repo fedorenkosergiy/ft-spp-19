@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма оплати ОСББ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        input[readonly] {
+            background-color: #e9ecef;
+            color: #495057;
+            cursor: not-allowed;
+        }
+
+        /* Підсвічування червоним при некоректному значенні */
+        input.invalid {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Форма оплати</h2>
+    <form id="paymentForm">
+        <div class="form-group">
+            <label for="aptNumber">Номер квартири</label>
+            <input type="number" id="aptNumber" name="aptNumber" min="1" max="162" placeholder="Введіть від 1 до 162" required>
+            <div id="aptError" class="error-message">Введіть номер квартири від 1 до 162</div>
+        </div>
+
+        <div class="form-group">
+            <label for="entrance">Підʼїзд</label>
+            <input type="text" id="entrance" name="entrance" value="0" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Сума (грн)</label>
+            <input type="number" id="amount" name="amount" value="4000" step="any" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fullName">ПІБ</label>
+            <input type="text" id="fullName" name="fullName" placeholder="Прізвище, Ім'я, По батькові" required>
+        </div>
+
+        <button type="submit">До оплати</button>
+    </form>
+</div>
+
+<script>
+    const aptInput = document.getElementById('aptNumber');
+    const entranceInput = document.getElementById('entrance');
+    const aptError = document.getElementById('aptError');
+    const form = document.getElementById('paymentForm');
+
+    // Автоматичне визначення під'їзду та валідація поля квартири
+    aptInput.addEventListener('input', function() {
+        const val = parseInt(this.value, 10);
+
+        if (isNaN(val) || val < 1 || val > 162) {
+            this.classList.add('invalid');
+            aptError.style.display = 'block';
+            entranceInput.value = 0;
+        } else {
+            this.classList.remove('invalid');
+            aptError.style.display = 'none';
+
+            if (val >= 1 && val <= 30) {
+                entranceInput.value = 1;
+            } else if (val >= 31 && val <= 54) {
+                entranceInput.value = 2;
+            } else if (val >= 55 && val <= 80) {
+                entranceInput.value = 3;
+            } else if (val >= 81 && val <= 118) {
+                entranceInput.value = 4;
+            } else if (val >= 119 && val <= 162) {
+                entranceInput.value = 5;
+            } else {
+                entranceInput.value = 0;
+            }
+        }
+    });
+
+    // Допоміжна функція для UTF-8 Base64 кодування
+    function utf8ToBase64(str) {
+        const bytes = new TextEncoder().encode(str);
+        const binString = Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
+        return btoa(binString);
+    }
+
+    // Обробка відправки форми
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const aptVal = parseInt(aptInput.value, 10);
+
+        // Перевірка діапазону перед відправкою
+        if (isNaN(aptVal) || aptVal < 1 || aptVal > 162) {
+            aptInput.classList.add('invalid');
+            aptError.style.display = 'block';
+            aptInput.focus();
+            return;
+        }
+
+        const entranceVal = entranceInput.value;
+        const amountVal = document.getElementById('amount').value;
+        const fullNameVal = document.getElementById('fullName').value.trim();
+
+        // Перевірка поля ПІБ
+        if (!fullNameVal) {
+            alert('Будь ласка, заповніть поле ПІБ');
+            return;
+        }
+
+        // Формування рядка призначення платежу
+        const purpose = `1019${aptVal}, ${fullNameVal}, Добровільний внесок на відновлювальні джерела енергії Сонячні панелі Будинок 19 Під’їзд ${entranceVal}`;
+
+        // Формування структури даних для QR
+        const rawData = [
+            "BCD",
+            "002",
+            "1",
+            "UCT",
+            "",
+            'АСОЦІАЦІЯ ОСББ "ЖК ФАЙНА ТАУН"',
+            "UA673226690000026000301334326",
+            "UAH" + amountVal,
+            "43864355",
+            purpose,
+            "",
+            ""
+        ].join("\n");
+
+        // Кодування даних в Base64 (UTF-8)
+        const encodedData = utf8ToBase64(rawData);
+
+        // Формування підсумкового deeplink
+        const deeplink = "https://bank.gov.ua/qr/" + encodedData;
+
+        // Відкриття посилання
+        window.location.href = deeplink;
+    });
+</script>
+
+</body>
+</html>
