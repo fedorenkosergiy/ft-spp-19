@@ -115,7 +115,7 @@
 <body>
 
 <div class="form-container">
-    <h2>Форма оплати v5</h2>
+    <h2>Форма оплати v6</h2>
     <form id="paymentForm">
         <div class="form-group">
             <label for="aptNumber">Номер квартири</label>
@@ -159,7 +159,7 @@
     const copyTooltip = document.getElementById('copyTooltip');
     const form = document.getElementById('paymentForm');
 
-    // Карта відповідності Unicode-символів до байтів Windows-1251
+    // Мапінг Windows-1251
     const win1251Mapping = {
         'Ђ': 0x80, 'Ѓ': 0x81, '‚': 0x82, 'ѓ': 0x83, '„': 0x84, '…': 0x85, '†': 0x86, '‡': 0x87,
         '€': 0x88, '‰': 0x89, 'Љ': 0x8A, '‹': 0x8B, 'Њ': 0x8C, 'Ќ': 0x8D, 'Ћ': 0x8E, 'Џ': 0x8F,
@@ -179,29 +179,30 @@
         'щ': 0xF9, 'ъ': 0xFA, 'ы': 0xFB, 'ь': 0xFC, 'э': 0xFD, 'ю': 0xFE, 'я': 0xFF
     };
 
-    // Функція кодування рядка у Base64 з використанням таблиці Windows-1251
-    function win1251ToBase64(str) {
+    // Кодування Windows-1251 -> Base64URL
+    function win1251ToBase64Url(str) {
         let binaryStr = "";
         for (let i = 0; i < str.length; i++) {
             const ch = str[i];
             const code = ch.charCodeAt(0);
 
             if (code < 128) {
-                // Стандартні ASCII символи (0-127)
                 binaryStr += String.fromCharCode(code);
             } else if (win1251Mapping[ch] !== undefined) {
-                // Символи, що є в таблиці Windows-1251
                 binaryStr += String.fromCharCode(win1251Mapping[ch]);
             } else {
-                // Запасний варіант для апострофів та невідомих символів
                 if (ch === '’' || ch === '`' || ch === '‘') {
-                    binaryStr += String.fromCharCode(0x27); // Звичайний ASCII апостроф '
+                    binaryStr += String.fromCharCode(0x27);
                 } else {
                     binaryStr += '?';
                 }
             }
         }
-        return btoa(binaryStr);
+
+        return btoa(binaryStr)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
     }
 
     // Розрахунок під'їзду
@@ -222,22 +223,19 @@
         const rawData = [
             "BCD",
             "002",
-            "2",
+            "1",
             "UCT",
             "",
             'АСОЦІАЦІЯ ОСББ "ЖК ФАЙНА ТАУН"',
             "UA673226690000026000301334326",
             "UAH" + amountVal,
             "43864355",
-            "",
-            "",
             purpose,
             "",
             ""
         ].join("\n");
 
-        // Використовуємо кодування Windows-1251 для Base64
-        return "https://bank.gov.ua/qr/" + win1251ToBase64(rawData);
+        return "https://bank.gov.ua/qr/" + win1251ToBase64Url(rawData);
     }
 
     // Валідація всієї форми
