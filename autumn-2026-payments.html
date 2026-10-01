@@ -3,25 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ФТ будинок 19 СЕС, осіть 2026</title>
+    <title>ФТ будинок 19 СЕС, осінь 2026</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            /* Встановлення фонового зображення bg.png */
+            background-image: url('bg.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            background-color: #f4f6f9; /* Запасний колір фону */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px 0;
+            padding: 20px;
             box-sizing: border-box;
         }
 
+        /* Біла підкладка форми для забезпечення контрасту */
         .form-container {
             background-color: #ffffff;
             padding: 25px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             width: 100%;
             max-width: 420px;
         }
@@ -46,7 +53,8 @@
         }
 
         input[type="text"],
-        input[type="number"] {
+        input[type="number"],
+        textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -54,15 +62,21 @@
             box-sizing: border-box;
             font-size: 14px;
             transition: border-color 0.3s, background-color 0.3s;
+            font-family: inherit;
         }
 
-        input[readonly] {
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        input[readonly], textarea[readonly] {
             background-color: #e9ecef;
             color: #495057;
+            cursor: pointer;
         }
 
         #urlInput {
-            cursor: pointer;
             word-break: break-all;
             font-size: 12px;
         }
@@ -87,6 +101,12 @@
             font-weight: bold;
         }
 
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
         button {
             width: 100%;
             padding: 12px;
@@ -94,11 +114,18 @@
             border: none;
             border-radius: 4px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
             transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        button.btn-secondary {
+            background-color: #6c757d;
+        }
+
+        button.btn-secondary:hover:not(:disabled) {
+            background-color: #5a6268;
         }
 
         button:hover:not(:disabled) {
@@ -116,7 +143,11 @@
 
 <div class="form-container">
     <h2>ФТ СЕС будинок 19</h2>
-    <p>Важливо: Працює тільки на смартфонах. Після оплати надішліть квитанцію на <a href="mailto:fedorenkosergiy@gmail.com?Subject=FT SPP 2026">fedorenkosergiy@gmail.com</a> або в <a href="https://t.me/+DMvfSJww4_Q0ZDYy">ТГ групу будинку</a></p>
+    <p>Важливо:</p>
+    <p>Після оплати надішліть квитанцію на <a href="mailto:fedorenkosergiy@gmail.com?Subject=FT SPP 2026">fedorenkosergiy@gmail.com</a> або в <a href="https://t.me/+DMvfSJww4_Q0ZDYy">ТГ групу будинку</a></p>
+    <p>Перехід "До оплати" працює тільки на смартфонах. На компʼютері використовуйте реквізити</p>
+    
+    <!-- Форма заповнення -->
     <form id="paymentForm">
         <div class="form-group">
             <label for="aptNumber">Номер квартири</label>
@@ -141,14 +172,57 @@
 
         <div class="form-group">
             <label for="urlInput">URL (deeplink)</label>
-            <input type="text" id="urlInput" readonly placeholder="Заповніть форму для генерації посилання">
-            <div id="copyTooltip" class="copy-tooltip">Скопійовано в буфер обміну!</div>
+            <input type="text" class="copyable-input" id="urlInput" readonly placeholder="Заповніть форму для генерації посилання">
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
         </div>
 
-        <button type="submit" id="submitBtn" disabled>До оплати</button>
+        <div class="button-group">
+            <button type="submit" id="submitBtn" disabled>До оплати</button>
+            <button type="button" id="detailsBtn" class="btn-secondary" disabled>Переглянути реквізити</button>
+        </div>
     </form>
-    <p>v 13</p>
+
+    <!-- Перегляд реквізитів -->
+    <div id="detailsContainer" style="display: none;">
+        <div class="form-group">
+            <label>IBAN</label>
+            <input type="text" class="copyable-input" value="UA673226690000026000301334326" readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>ЄДРПОУ</label>
+            <input type="text" class="copyable-input" value="43864355" readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Отримувач</label>
+            <input type="text" class="copyable-input" value='АСОЦІАЦІЯ ОСББ "ЖК ФАЙНА ТАУН"' readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Сума</label>
+            <input type="text" id="reqAmount" class="copyable-input" readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Призначення</label>
+            <textarea id="reqPurpose" class="copyable-input" readonly></textarea>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" id="payFromDetailsBtn" disabled>До оплати</button>
+            <button type="button" id="backToFormBtn" class="btn-secondary">Назад до форми</button>
+        </div>
+    </div>
+
+    <p>v 18</p>
 </div>
+
 <script>
     const aptInput = document.getElementById('aptNumber');
     const entranceInput = document.getElementById('entrance');
@@ -157,8 +231,19 @@
     const urlInput = document.getElementById('urlInput');
     const aptError = document.getElementById('aptError');
     const submitBtn = document.getElementById('submitBtn');
-    const copyTooltip = document.getElementById('copyTooltip');
+    const detailsBtn = document.getElementById('detailsBtn');
     const form = document.getElementById('paymentForm');
+
+    const detailsContainer = document.getElementById('detailsContainer');
+    const reqAmount = document.getElementById('reqAmount');
+    const reqPurpose = document.getElementById('reqPurpose');
+    const payFromDetailsBtn = document.getElementById('payFromDetailsBtn');
+    const backToFormBtn = document.getElementById('backToFormBtn');
+
+    // Перевірка мобільного пристрою (iOS або Android)
+    function isMobileDevice() {
+        return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
 
     // Мапінг Windows-1251
     const win1251Mapping = {
@@ -180,7 +265,6 @@
         'щ': 0xF9, 'ъ': 0xFA, 'ы': 0xFB, 'ь': 0xFC, 'э': 0xFD, 'ю': 0xFE, 'я': 0xFF
     };
 
-    // Кодування Windows-1251 -> Base64URL
     function win1251ToBase64Url(str) {
         let binaryStr = "";
         for (let i = 0; i < str.length; i++) {
@@ -206,7 +290,6 @@
             .replace(/=+$/, '');
     }
 
-    // Розрахунок під'їзду
     function calculateEntrance(val) {
         if (val >= 1 && val <= 30) return 1;
         if (val >= 31 && val <= 54) return 2;
@@ -216,11 +299,12 @@
         return 0;
     }
 
-    // Генерація deeplink
-    function generateDeeplink(aptVal, entranceVal, amountVal, fullNameVal) {
+    function getPurpose(aptVal, entranceVal, fullNameVal) {
         const aptFormatted = String(aptVal).padStart(3, '0');
-        const purpose = `1019${aptFormatted}, ${fullNameVal.trim()}, Добровільний внесок на відновлювальні джерела енергії Сонячні панелі Будинок 19 Під’їзд ${entranceVal}`;
+        return `1019${aptFormatted}, ${fullNameVal.trim()}, Добровільний внесок на відновлювальні джерела енергії Сонячні панелі Будинок 19 Під’їзд ${entranceVal}`;
+    }
 
+    function generateDeeplink(purpose, amountVal) {
         const rawData = [
             "BCD",
             "002",
@@ -241,7 +325,6 @@
         return "https://bank.gov.ua/qr/" + win1251ToBase64Url(rawData);
     }
 
-    // Валідація всієї форми
     function validateForm() {
         const aptVal = parseInt(aptInput.value, 10);
         const isAptValid = !isNaN(aptVal) && aptVal >= 1 && aptVal <= 162;
@@ -263,44 +346,83 @@
             }
         }
 
-        if (isAptValid && isAmountValid && isFullNameValid) {
-            submitBtn.disabled = false;
-            const link = generateDeeplink(aptVal, entranceInput.value, amountInput.value, fullNameInput.value);
+        const isFormValid = isAptValid && isAmountValid && isFullNameValid;
+        const mobile = isMobileDevice();
+
+        if (isFormValid) {
+            // Кнопка "До оплати" активна ТІЛЬКИ на iOS / Android при валідній формі
+            submitBtn.disabled = !mobile;
+            payFromDetailsBtn.disabled = !mobile;
+
+            detailsBtn.disabled = false;
+
+            const purpose = getPurpose(aptVal, entranceInput.value, fullNameInput.value);
+            const link = generateDeeplink(purpose, amountInput.value);
+
             urlInput.value = link;
+            reqAmount.value = amountInput.value;
+            reqPurpose.value = purpose;
         } else {
             submitBtn.disabled = true;
+            detailsBtn.disabled = true;
+            payFromDetailsBtn.disabled = true;
             urlInput.value = '';
+            reqAmount.value = '';
+            reqPurpose.value = '';
         }
     }
 
-    // Події зміни полів
+    // Слухачі подій
     aptInput.addEventListener('input', validateForm);
     amountInput.addEventListener('input', validateForm);
     fullNameInput.addEventListener('input', validateForm);
 
-    // Копіювання по кліку
-    urlInput.addEventListener('click', function() {
-        if (!this.value) return;
+    // Універсальне копіювання для будь-якого елемента .copyable-input
+    document.querySelectorAll('.copyable-input').forEach(input => {
+        input.addEventListener('click', function() {
+            if (!this.value) return;
 
-        navigator.clipboard.writeText(this.value).then(() => {
-            copyTooltip.style.display = 'block';
-            setTimeout(() => {
-                copyTooltip.style.display = 'none';
-            }, 2500);
-        }).catch(() => {
-            this.select();
-            document.execCommand('copy');
-            copyTooltip.style.display = 'block';
-            setTimeout(() => {
-                copyTooltip.style.display = 'none';
-            }, 2500);
+            const tooltip = this.parentElement.querySelector('.copy-tooltip');
+
+            navigator.clipboard.writeText(this.value).then(() => {
+                if (tooltip) {
+                    tooltip.style.display = 'block';
+                    setTimeout(() => tooltip.style.display = 'none', 2500);
+                }
+            }).catch(() => {
+                this.select();
+                document.execCommand('copy');
+                if (tooltip) {
+                    tooltip.style.display = 'block';
+                    setTimeout(() => tooltip.style.display = 'none', 2500);
+                }
+            });
         });
     });
 
-    // Відправка форми
+    // Перемикання на реквізити
+    detailsBtn.addEventListener('click', function() {
+        form.style.display = 'none';
+        detailsContainer.style.display = 'block';
+    });
+
+    // Перемикання назад до форми
+    backToFormBtn.addEventListener('click', function() {
+        detailsContainer.style.display = 'none';
+        form.style.display = 'block';
+    });
+
+    // Оплата з форми
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        if (urlInput.value) {
+        if (urlInput.value && isMobileDevice()) {
+            window.location.href = urlInput.value;
+        }
+    });
+
+    // Оплата з реквізитів
+    payFromDetailsBtn.addEventListener('click', function() {
+        if (urlInput.value && isMobileDevice()) {
             window.location.href = urlInput.value;
         }
     });
