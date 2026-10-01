@@ -7,21 +7,28 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            /* Встановлення фонового зображення bg.png */
+            background-image: url('bg.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            background-color: #f4f6f9; /* Запасний колір фону */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px 0;
+            padding: 20px;
             box-sizing: border-box;
         }
 
+        /* Біла підкладка форми для забезпечення контрасту */
         .form-container {
             background-color: #ffffff;
             padding: 25px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             width: 100%;
             max-width: 420px;
         }
@@ -136,9 +143,8 @@
 
 <div class="form-container">
     <h2>ФТ СЕС будинок 19</h2>
-    <p>Важливо:</p>
-    <p>Після оплати надішліть квитанцію на <a href="mailto:fedorenkosergiy@gmail.com?Subject=FT SPP 2026">fedorenkosergiy@gmail.com</a> або в <a href="https://t.me/+DMvfSJww4_Q0ZDYy">ТГ групу будинку</a></p>
-    <p>Лінк на оплату працює тільки на смартфонах із банківським застосунком.</p>
+    <p>Важливо: Працює тільки на смартфонах. Після оплати надішліть квитанцію на <a href="mailto:fedorenkosergiy@gmail.com?Subject=FT SPP 2026">fedorenkosergiy@gmail.com</a> або в <a href="https://t.me/+DMvfSJww4_Q0ZDYy">ТГ групу будинку</a></p>
+    
     <!-- Форма заповнення -->
     <form id="paymentForm">
         <div class="form-group">
@@ -212,7 +218,7 @@
         </div>
     </div>
 
-    <p>v 14</p>
+    <p>v 15</p>
 </div>
 
 <script>
