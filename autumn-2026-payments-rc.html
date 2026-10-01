@@ -145,7 +145,8 @@
     <h2>ФТ СЕС будинок 19</h2>
     <p>Важливо:</p>
     <p>Після оплати надішліть квитанцію на <a href="mailto:fedorenkosergiy@gmail.com?Subject=FT SPP 2026">fedorenkosergiy@gmail.com</a> або в <a href="https://t.me/+DMvfSJww4_Q0ZDYy">ТГ групу будинку</a></p>
-    <p>Працює тільки на смартфонах.</p>
+    <p>Перехід "До оплати" працює тільки на смартфонах. На компʼютері використовуйте реквізити</p>
+    
     <!-- Форма заповнення -->
     <form id="paymentForm">
         <div class="form-group">
@@ -214,12 +215,12 @@
         </div>
 
         <div class="button-group">
-            <button type="button" id="payFromDetailsBtn">До оплати</button>
+            <button type="button" id="payFromDetailsBtn" disabled>До оплати</button>
             <button type="button" id="backToFormBtn" class="btn-secondary">Назад до форми</button>
         </div>
     </div>
 
-    <p>v 16</p>
+    <p>v 18</p>
 </div>
 
 <script>
@@ -238,6 +239,11 @@
     const reqPurpose = document.getElementById('reqPurpose');
     const payFromDetailsBtn = document.getElementById('payFromDetailsBtn');
     const backToFormBtn = document.getElementById('backToFormBtn');
+
+    // Перевірка мобільного пристрою (iOS або Android)
+    function isMobileDevice() {
+        return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
 
     // Мапінг Windows-1251
     const win1251Mapping = {
@@ -340,8 +346,14 @@
             }
         }
 
-        if (isAptValid && isAmountValid && isFullNameValid) {
-            submitBtn.disabled = false;
+        const isFormValid = isAptValid && isAmountValid && isFullNameValid;
+        const mobile = isMobileDevice();
+
+        if (isFormValid) {
+            // Кнопка "До оплати" активна ТІЛЬКИ на iOS / Android при валідній формі
+            submitBtn.disabled = !mobile;
+            payFromDetailsBtn.disabled = !mobile;
+
             detailsBtn.disabled = false;
 
             const purpose = getPurpose(aptVal, entranceInput.value, fullNameInput.value);
@@ -353,6 +365,7 @@
         } else {
             submitBtn.disabled = true;
             detailsBtn.disabled = true;
+            payFromDetailsBtn.disabled = true;
             urlInput.value = '';
             reqAmount.value = '';
             reqPurpose.value = '';
@@ -402,14 +415,14 @@
     // Оплата з форми
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        if (urlInput.value) {
+        if (urlInput.value && isMobileDevice()) {
             window.location.href = urlInput.value;
         }
     });
 
     // Оплата з реквізитів
     payFromDetailsBtn.addEventListener('click', function() {
-        if (urlInput.value) {
+        if (urlInput.value && isMobileDevice()) {
             window.location.href = urlInput.value;
         }
     });
