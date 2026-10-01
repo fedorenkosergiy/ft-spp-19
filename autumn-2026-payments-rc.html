@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ФТ будинок 19 СЕС, осінь 2026</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s, background-color 0.3s;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        input[readonly], textarea[readonly] {
+            background-color: #e9ecef;
+            color: #495057;
+            cursor: pointer;
+        }
+
+        #urlInput {
+            word-break: break-all;
+            font-size: 12px;
+        }
+
+        input.invalid {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .copy-tooltip {
+            color: #28a745;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        button.btn-secondary {
+            background-color: #6c757d;
+        }
+
+        button.btn-secondary:hover:not(:disabled) {
+            background-color: #5a6268;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #6c757d;
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>ФТ СЕС будинок 19</h2>
+    <p>Важливо: Працює тільки на смартфонах. Після оплати надішліть квитанцію на <a href="mailto:fedorenkosergiy@gmail.com?Subject=FT SPP 2026">fedorenkosergiy@gmail.com</a> або в <a href="https://t.me/+DMvfSJww4_Q0ZDYy">ТГ групу будинку</a></p>
+    
+    <!-- Форма заповнення -->
+    <form id="paymentForm">
+        <div class="form-group">
+            <label for="aptNumber">Номер квартири</label>
+            <input type="number" id="aptNumber" name="aptNumber" min="1" max="162" placeholder="Введіть від 1 до 162" required>
+            <div id="aptError" class="error-message">Введіть номер квартири від 1 до 162</div>
+        </div>
+
+        <div class="form-group">
+            <label for="entrance">Підʼїзд</label>
+            <input type="text" id="entrance" name="entrance" value="0" readonly tabindex="-1">
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Сума (грн)</label>
+            <input type="number" id="amount" name="amount" value="4000" step="any" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fullName">ПІБ</label>
+            <input type="text" id="fullName" name="fullName" placeholder="Прізвище, Ім'я, По батькові" required>
+        </div>
+
+        <div class="form-group">
+            <label for="urlInput">URL (deeplink)</label>
+            <input type="text" class="copyable-input" id="urlInput" readonly placeholder="Заповніть форму для генерації посилання">
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" id="submitBtn" disabled>До оплати</button>
+            <button type="button" id="detailsBtn" class="btn-secondary" disabled>Переглянути реквізити</button>
+        </div>
+    </form>
+
+    <!-- Перегляд реквізитів -->
+    <div id="detailsContainer" style="display: none;">
+        <div class="form-group">
+            <label>IBAN</label>
+            <input type="text" class="copyable-input" value="UA673226690000026000301334326" readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>ЄДРПОУ</label>
+            <input type="text" class="copyable-input" value="43864355" readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Отримувач</label>
+            <input type="text" class="copyable-input" value='АСОЦІАЦІЯ ОСББ "ЖК ФАЙНА ТАУН"' readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Сума</label>
+            <input type="text" id="reqAmount" class="copyable-input" readonly>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="form-group">
+            <label>Призначення</label>
+            <textarea id="reqPurpose" class="copyable-input" readonly></textarea>
+            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" id="payFromDetailsBtn">До оплати</button>
+            <button type="button" id="backToFormBtn" class="btn-secondary">Назад до форми</button>
+        </div>
+    </div>
+
+    <p>v 13</p>
+</div>
+
+<script>
+    const aptInput = document.getElementById('aptNumber');
+    const entranceInput = document.getElementById('entrance');
+    const amountInput = document.getElementById('amount');
+    const fullNameInput = document.getElementById('fullName');
+    const urlInput = document.getElementById('urlInput');
+    const aptError = document.getElementById('aptError');
+    const submitBtn = document.getElementById('submitBtn');
+    const detailsBtn = document.getElementById('detailsBtn');
+    const form = document.getElementById('paymentForm');
+
+    const detailsContainer = document.getElementById('detailsContainer');
+    const reqAmount = document.getElementById('reqAmount');
+    const reqPurpose = document.getElementById('reqPurpose');
+    const payFromDetailsBtn = document.getElementById('payFromDetailsBtn');
+    const backToFormBtn = document.getElementById('backToFormBtn');
+
+    // Мапінг Windows-1251
+    const win1251Mapping = {
+        'Ђ': 0x80, 'Ѓ': 0x81, '‚': 0x82, 'ѓ': 0x83, '„': 0x84, '…': 0x85, '†': 0x86, '‡': 0x87,
+        '€': 0x88, '‰': 0x89, 'Љ': 0x8A, '‹': 0x8B, 'Њ': 0x8C, 'Ќ': 0x8D, 'Ћ': 0x8E, 'Џ': 0x8F,
+        'ђ': 0x90, '‘': 0x91, '’': 0x92, '“': 0x93, '”': 0x94, '•': 0x95, '–': 0x96, '—': 0x97,
+        '™': 0x99, 'љ': 0x9A, '›': 0x9B, 'њ': 0x9C, 'ќ': 0x9D, 'ћ': 0x9E, 'џ': 0x9F, ' ': 0xA0,
+        'Ў': 0xA1, 'ў': 0xA2, 'Ј': 0xA3, '¤': 0xA4, 'Ґ': 0xA5, '¦': 0xA6, '§': 0xA7, 'Ё': 0xA8,
+        '©': 0xA9, 'Є': 0xAA, '«': 0xAB, '¬': 0xAC, '­': 0xAD, '®': 0xAE, 'Ї': 0xAF, '°': 0xB0,
+        '±': 0xB1, 'І': 0xB2, 'і': 0xB3, 'ґ': 0xB4, 'µ': 0xB5, '¶': 0xB6, '·': 0xB7, 'ё': 0xB8,
+        '№': 0xB9, 'є': 0xBA, '»': 0xBB, 'ј': 0xBC, 'Ѕ': 0xBD, 'ѕ': 0xBE, 'ї': 0xBF, 'А': 0xC0,
+        'Б': 0xC1, 'В': 0xC2, 'Г': 0xC3, 'Д': 0xC4, 'Е': 0xC5, 'Ж': 0xC6, 'З': 0xC7, 'И': 0xC8,
+        'Й': 0xC9, 'К': 0xCA, 'Л': 0xCB, 'М': 0xCC, 'Н': 0xCD, 'О': 0xCE, 'П': 0xCF, 'Р': 0xD0,
+        'С': 0xD1, 'Т': 0xD2, 'У': 0xD3, 'Ф': 0xD4, 'Х': 0xD5, 'Ц': 0xD6, 'Ч': 0xD7, 'Ш': 0xD8,
+        'Щ': 0xD9, 'Ъ': 0xDA, 'Ы': 0xDB, 'Ь': 0xDC, 'Э': 0xDD, 'Ю': 0xDE, 'Я': 0xDF, 'а': 0xE0,
+        'б': 0xE1, 'в': 0xE2, 'г': 0xE3, 'д': 0xE4, 'е': 0xE5, 'ж': 0xE6, 'з': 0xE7, 'и': 0xE8,
+        'й': 0xE9, 'к': 0xEA, 'л': 0xEB, 'м': 0xEC, 'н': 0xED, 'о': 0xEE, 'п': 0xEF, 'р': 0xF0,
+        'с': 0xF1, 'т': 0xF2, 'у': 0xF3, 'ф': 0xF4, 'х': 0xF5, 'ц': 0xF6, 'ч': 0xF7, 'ш': 0xF8,
+        'щ': 0xF9, 'ъ': 0xFA, 'ы': 0xFB, 'ь': 0xFC, 'э': 0xFD, 'ю': 0xFE, 'я': 0xFF
+    };
+
+    function win1251ToBase64Url(str) {
+        let binaryStr = "";
+        for (let i = 0; i < str.length; i++) {
+            const ch = str[i];
+            const code = ch.charCodeAt(0);
+
+            if (code < 128) {
+                binaryStr += String.fromCharCode(code);
+            } else if (win1251Mapping[ch] !== undefined) {
+                binaryStr += String.fromCharCode(win1251Mapping[ch]);
+            } else {
+                if (ch === '’' || ch === '`' || ch === '‘') {
+                    binaryStr += String.fromCharCode(0x27);
+                } else {
+                    binaryStr += '?';
+                }
+            }
+        }
+
+        return btoa(binaryStr)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    }
+
+    function calculateEntrance(val) {
+        if (val >= 1 && val <= 30) return 1;
+        if (val >= 31 && val <= 54) return 2;
+        if (val >= 55 && val <= 80) return 3;
+        if (val >= 81 && val <= 118) return 4;
+        if (val >= 119 && val <= 162) return 5;
+        return 0;
+    }
+
+    function getPurpose(aptVal, entranceVal, fullNameVal) {
+        const aptFormatted = String(aptVal).padStart(3, '0');
+        return `1019${aptFormatted}, ${fullNameVal.trim()}, Добровільний внесок на відновлювальні джерела енергії Сонячні панелі Будинок 19 Під’їзд ${entranceVal}`;
+    }
+
+    function generateDeeplink(purpose, amountVal) {
+        const rawData = [
+            "BCD",
+            "002",
+            "2",
+            "UCT",
+            "",
+            'АСОЦІАЦІЯ ОСББ "ЖК ФАЙНА ТАУН"',
+            "UA673226690000026000301334326",
+            "UAH" + amountVal,
+            "43864355",
+            "",
+            "",
+            purpose,
+            "",
+            ""
+        ].join("\n");
+
+        return "https://bank.gov.ua/qr/" + win1251ToBase64Url(rawData);
+    }
+
+    function validateForm() {
+        const aptVal = parseInt(aptInput.value, 10);
+        const isAptValid = !isNaN(aptVal) && aptVal >= 1 && aptVal <= 162;
+        const amountVal = parseFloat(amountInput.value);
+        const isAmountValid = !isNaN(amountVal) && amountVal > 0;
+        const isFullNameValid = fullNameInput.value.trim().length > 0;
+
+        if (aptInput.value !== '' && !isAptValid) {
+            aptInput.classList.add('invalid');
+            aptError.style.display = 'block';
+            entranceInput.value = 0;
+        } else {
+            aptInput.classList.remove('invalid');
+            aptError.style.display = 'none';
+            if (isAptValid) {
+                entranceInput.value = calculateEntrance(aptVal);
+            } else {
+                entranceInput.value = 0;
+            }
+        }
+
+        if (isAptValid && isAmountValid && isFullNameValid) {
+            submitBtn.disabled = false;
+            detailsBtn.disabled = false;
+
+            const purpose = getPurpose(aptVal, entranceInput.value, fullNameInput.value);
+            const link = generateDeeplink(purpose, amountInput.value);
+
+            urlInput.value = link;
+            reqAmount.value = amountInput.value;
+            reqPurpose.value = purpose;
+        } else {
+            submitBtn.disabled = true;
+            detailsBtn.disabled = true;
+            urlInput.value = '';
+            reqAmount.value = '';
+            reqPurpose.value = '';
+        }
+    }
+
+    // Слухачі подій
+    aptInput.addEventListener('input', validateForm);
+    amountInput.addEventListener('input', validateForm);
+    fullNameInput.addEventListener('input', validateForm);
+
+    // Універсальне копіювання для будь-якого елемента .copyable-input
+    document.querySelectorAll('.copyable-input').forEach(input => {
+        input.addEventListener('click', function() {
+            if (!this.value) return;
+
+            const tooltip = this.parentElement.querySelector('.copy-tooltip');
+
+            navigator.clipboard.writeText(this.value).then(() => {
+                if (tooltip) {
+                    tooltip.style.display = 'block';
+                    setTimeout(() => tooltip.style.display = 'none', 2500);
+                }
+            }).catch(() => {
+                this.select();
+                document.execCommand('copy');
+                if (tooltip) {
+                    tooltip.style.display = 'block';
+                    setTimeout(() => tooltip.style.display = 'none', 2500);
+                }
+            });
+        });
+    });
+
+    // Перемикання на реквізити
+    detailsBtn.addEventListener('click', function() {
+        form.style.display = 'none';
+        detailsContainer.style.display = 'block';
+    });
+
+    // Перемикання назад до форми
+    backToFormBtn.addEventListener('click', function() {
+        detailsContainer.style.display = 'none';
+        form.style.display = 'block';
+    });
+
+    // Оплата з форми
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (urlInput.value) {
+            window.location.href = urlInput.value;
+        }
+    });
+
+    // Оплата з реквізитів
+    payFromDetailsBtn.addEventListener('click', function() {
+        if (urlInput.value) {
+            window.location.href = urlInput.value;
+        }
+    });
+
+    validateForm();
+</script>
+
+</body>
+</html>
