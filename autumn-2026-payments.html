@@ -143,84 +143,8 @@
 
 <div class="form-container">
     <h2>ФТ СЕС будинок 19</h2>
-    <p>Важливо:</p>
-    <p>Після оплати надішліть квитанцію на <a href="mailto:fedorenkosergiy@gmail.com?Subject=FT SPP 2026">fedorenkosergiy@gmail.com</a> або в <a href="https://t.me/+DMvfSJww4_Q0ZDYy">ТГ групу будинку</a></p>
-    <p>Перехід "До оплати" працює тільки на смартфонах. На компʼютері використовуйте реквізити</p>
-    
-    <!-- Форма заповнення -->
-    <form id="paymentForm">
-        <div class="form-group">
-            <label for="aptNumber">Номер квартири</label>
-            <input type="number" id="aptNumber" name="aptNumber" min="1" max="162" placeholder="Введіть від 1 до 162" required>
-            <div id="aptError" class="error-message">Введіть номер квартири від 1 до 162</div>
-        </div>
-
-        <div class="form-group">
-            <label for="entrance">Підʼїзд</label>
-            <input type="text" id="entrance" name="entrance" value="0" readonly tabindex="-1">
-        </div>
-
-        <div class="form-group">
-            <label for="amount">Сума (грн)</label>
-            <input type="number" id="amount" name="amount" value="4000" step="any" required>
-        </div>
-
-        <div class="form-group">
-            <label for="fullName">ПІБ</label>
-            <input type="text" id="fullName" name="fullName" placeholder="Прізвище, Ім'я, По батькові" required>
-        </div>
-
-        <div class="form-group">
-            <label for="urlInput">URL (deeplink)</label>
-            <input type="text" class="copyable-input" id="urlInput" readonly placeholder="Заповніть форму для генерації посилання">
-            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
-        </div>
-
-        <div class="button-group">
-            <button type="submit" id="submitBtn" disabled>До оплати</button>
-            <button type="button" id="detailsBtn" class="btn-secondary" disabled>Переглянути реквізити</button>
-        </div>
-    </form>
-
-    <!-- Перегляд реквізитів -->
-    <div id="detailsContainer" style="display: none;">
-        <div class="form-group">
-            <label>IBAN</label>
-            <input type="text" class="copyable-input" value="UA673226690000026000301334326" readonly>
-            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
-        </div>
-
-        <div class="form-group">
-            <label>ЄДРПОУ</label>
-            <input type="text" class="copyable-input" value="43864355" readonly>
-            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
-        </div>
-
-        <div class="form-group">
-            <label>Отримувач</label>
-            <input type="text" class="copyable-input" value='АСОЦІАЦІЯ ОСББ "ЖК ФАЙНА ТАУН"' readonly>
-            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
-        </div>
-
-        <div class="form-group">
-            <label>Сума</label>
-            <input type="text" id="reqAmount" class="copyable-input" readonly>
-            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
-        </div>
-
-        <div class="form-group">
-            <label>Призначення</label>
-            <textarea id="reqPurpose" class="copyable-input" readonly></textarea>
-            <div class="copy-tooltip">Скопійовано в буфер обміну!</div>
-        </div>
-
-        <div class="button-group">
-            <button type="button" id="payFromDetailsBtn" disabled>До оплати</button>
-            <button type="button" id="backToFormBtn" class="btn-secondary">Назад до форми</button>
-        </div>
-    </div>
-
-    <p>v 18</p>
+    <p>Збір завершився</p>
+    <p>v 19</p>
 </div>
 
 <script>
